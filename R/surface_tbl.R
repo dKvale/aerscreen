@@ -7,9 +7,9 @@
 #'                       Requires a value of \code{0.5} or greater. 
 #'                       Defaults to \code{0.5}.
 #' @param anem_height Anemometer height in meters. Defaults to \code{10}.
-#' @param surf_profile Dominant surface characteristics profile. 
+#' @param surf_profile Dominant surface characteristics profile. Accepts integers between [0, 3].
 #'                     Enter \code{0} if providing site specific albedo, Bowen ratio and surface roughness.
-#'                     Defaults to \code{7}.
+#'                     Defaults to \code{7}. Options: 
 #'                     (0) NA
 #'                     (1) Water
 #'                     (2) Deciduous forest
@@ -19,40 +19,40 @@
 #'                     (6) Grassland
 #'                     (7) Urban
 #'                     (8) Desert shrubland
-#' @param climate_profile Dominant climate moisture profile. 
+#' @param climate_profile Dominant climate moisture profile. Accepts integers between [0, 3]. 
 #'                        Enter \code{0} if providing site specific albedo, Bowen ratio and surface roughness. 
-#'                        Defaults to \code{1}.
+#'                        Defaults to \code{1}. Options: 
 #'                        (0) NA  
 #'                        (1) Average moisture
 #'                        (2) Wet conditions
 #'                        (3) Dry conditions
 #' @param albedo Albedo. The average proportion of incident light reflected at noontime.
-#'               Requires a value between [0, 1].
+#'               Accepts values between [0, 1].
 #'               Ignored by AERSCREEN unless \code{surf_profile} and \code{climate_profile} are set to \code{0}.
 #' @param bowen Bowen ratio. The average midday ratio of the sensible heat flux (\code{H}) 
 #'              to the evaporative heat flux (\code{E}). 
 #'              The greater the value of \code{H/E} the dryer the conditions.
-#'              Requires a value between [-10 and 10].
+#'              Accepts values between [-10 and 10].
 #'              Ignored by AERSCREEN unless \code{surf_profile} and \code{climate_profile} are set to \code{0}.
 #' @param z_length Surface roughness length. 
 #'                 The height at  which the  mean  horizontal  wind  speed  approaches  zero. 
-#'                 Requires a value between [0.001 and 2].
+#'                 Accepts values between [0.001 and 2].
 #'                 Ignored by AERSCREEN unless \code{surf_profile} and \code{climate_profile} are set to \code{0}.
-#' @keywords meteorology weather surface aerscreen input
+#' @keywords surface meteorology weather aerscreen input
 #' @export
 #' @examples
-#' surf_tbl()
+#' surface_tbl()
 # 
 #
-surf_tbl <- function(min_temp_k       = 235,
-                     max_temp_k       = 315,
-                     min_wind_speed   = 0.5,
-                     anem_height      = 10,
-                     surf_profile     = 7,
-                     climate_profile  = 1,
-                     albedo           = as.numeric(NA),
-                     bowen            = as.numeric(NA),
-                     z_length         = as.numeric(NA)
+surface_tbl <- function(min_temp_k       = 235,
+                        max_temp_k       = 315,
+                        min_wind_speed   = 0.5,
+                        anem_height      = 10,
+                        surf_profile     = 7,
+                        climate_profile  = 1,
+                        albedo           = as.numeric(NA),
+                        bowen            = as.numeric(NA),
+                        z_length         = as.numeric(NA)
 ) {
   
   # Value checks

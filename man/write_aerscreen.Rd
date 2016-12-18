@@ -2,23 +2,39 @@
 % Please edit documentation in R/write_aerscreen.R
 \name{write_aerscreen}
 \alias{write_aerscreen}
-\title{Save a data frame to an input text file for the AERSCREEN model.}
+\title{Write a data frame to an AERSCREEN input file}
 \usage{
-write_aerscreen(x, path)
+write_aerscreen(data = NULL, path = NULL, control = NULL,
+  sources = NULL, receptors = NULL, surface = NULL, met = NULL,
+  out = NULL)
 }
 \arguments{
-\item{x}{A data frame to write to disk}
+\item{data}{Data frame of AERSCREEN modeling parameters.}
 
-\item{path}{Path to write to.}
+\item{path}{Path to write to. Defaults to "aerscreen.inp".}
+
+\item{control}{Data frame of control parameters. If blank, control parameters from \code{data} are used.}
+
+\item{sources}{Data frame of source parameters. If blank, source parameters from \code{data} are used.}
+
+\item{receptors}{Data frame of receptor parameters. If blank, receptor parameters from \code{data} are used.}
+
+\item{surface}{Data frame of surface characteristics. If blank, surface characteristics from \code{data} are used.}
+
+\item{met}{Data frame of meteorology parameters. If blank, meteorology parameters from \code{data} are used.}
+
+\item{out}{Data frame of output parameters. If blank, output parameters from \code{data} are used.}
 }
 \description{
-Save a data frame to an input text file for the AERSCREEN model.
+Output an AERSCREEN input file from a data frame of AERSCREEN parameters.
 }
 \examples{
-write_aerscreen(x = aerscreen_inp, path = "Inputs/aerscreen.inp")
+aerscreen_inp <- new_aerscreen()
+
+write_aerscreen(data = aerscreen_inp, path = "aerscreen.inp")
 }
-\keyword{aermod}
 \keyword{aerscreen}
+\keyword{input}
 \keyword{save}
 \keyword{write}
 

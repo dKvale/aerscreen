@@ -4,25 +4,26 @@
 \alias{run_aerscreen}
 \title{Run AERSCREEN}
 \usage{
-run_aerscreen(input = "aerscreen.inp", output = input$TITLEONE,
+run_aerscreen(input = "aerscreen.inp", out_file = input$TITLEONE,
   exe_folder = "aerscreen/")
 }
 \arguments{
 \item{input}{AERSCREEN input file. Defaults to aerscreen_inp. A file path may be used (ex. "aerscreen.inp").}
 
-\item{output}{File name for model output. Defaults to `TITLEONE` of input file.}
+\item{out_file}{File name for saving model output. 
+Defaults to value of \code{title} in the provided input file.}
 
-\item{exe_folder}{aerscreen.exe location. Defaults to "aerscreen/".}
+\item{exe_folder}{Folder containing \code{aerscreen.exe}.}
 }
 \description{
 Run aerscreen.exe with designated input file.
 }
 \examples{
-run_aerscreen(input = "inputs/aerscreen.inp", 
-              output = "output_test1")
+run_aerscreen(input    = "inputs/aerscreen.inp", 
+              out_file = "output_test1")
 }
-\keyword{aermod}
 \keyword{aerscreen}
 \keyword{dispersion}
 \keyword{model}
+\keyword{run}
 
