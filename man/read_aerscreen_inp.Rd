@@ -7,13 +7,15 @@
 read_aerscreen_inp(file = "aerscreen.inp")
 }
 \arguments{
-\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.inp" in the working directory.}
+\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.inp".}
 }
 \description{
 Read an aerscreen.inp file or text into an AERSCREEN input table.
 }
 \examples{
-read_aerscreen_inp(file = "aermod.inp")
+aerscreen_inp <- 
+
+read_aerscreen_inp(file = aerscreen_inp)
 }
 \keyword{aerscreen}
 \keyword{input}

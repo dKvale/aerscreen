@@ -1,22 +1,30 @@
-#' Run AERSCREEN.exe with designated input file
+#' Run AERSCREEN
 #'
-#' Run AERSCREEN.exe with designated input file.
-#' @param input  AERSCREEN input data.frame. Defaults to aerscreen_inp. If a file path is used (e.g. "inputs/aerscreen.inp"), the model will be directed to use the input file. 
-#' @param output  File name for model output. Defaults to "aerscreen_results".
-#' @param exe_folder  aerscreen.exe location. Defaults to "aerscreen/". 
-#' @keywords aerscreen aermod run model
+#' Run aerscreen.exe with designated input file.
+#' @param input  AERSCREEN input file. Defaults to aerscreen_inp. A file path may be used (ex. "aerscreen.inp"). 
+#' @param out_file File name for saving model output. 
+#'                Defaults to value of \code{title} in the provided input file.
+#' @param exe_folder Folder containing \code{aerscreen.exe}. 
+#' @keywords aerscreen run dispersion model
 #' @export
 #' @examples
-#' run_aerscreen(input = "inputs/aerscreen.inp", output = "output_test1")
+#' run_aerscreen(input    = "inputs/aerscreen.inp", 
+#'               out_file = "output_test1")
 # 
 #
 
-run_aerscreen <- function(input      = aerscreen_inp, 
-                          output     = "aerscreen_results",
-                          exe_folder = "aerscreen") {
+run_aerscreen <- function(input      = "aerscreen.inp", 
+                          out_file   = input$TITLEONE,
+                          exe_folder = "aerscreen/") {
   
- # Check for aerscreen.exe in exe_folder
+ # Check for required EPA models in exe_folder
   check_aerscreen <- "aerscreen.exe" %in% tolower(list.files(exe_folder))
+  
+  check_aermod    <- "aermod.exe" %in% tolower(list.files(exe_folder))
+  
+  check_makemet   <- "makemet.exe" %in% tolower(list.files(exe_folder))
+  
+  check_bpip      <- "bpipprm .exe" %in% tolower(list.files(exe_folder))
   
   if(!check_aerscreen) {
     warning("aerscreen.exe was not found in ", exe_folder)
@@ -68,12 +76,12 @@ run_aerscreen <- function(input      = aerscreen_inp,
   
   
   # Copy output file to designated file
-  #shell(paste0(relocate, ' & COPY aerscreen.out "', paste0('"', getwd(), '/', output, '.out"')))
+  #shell(paste0(relocate, ' & COPY aerscreen.out "', paste0('"', getwd(), '/', out_file, '.out"')))
   
   
   # Read modeling results
-  if(!grepl("[.]out", output)) output <- paste0(output, ".out")
+  if(!grepl("[.]out", out_file)) out_file <- paste0(out_file, ".out")
 
-  invisible(readLines(paste0(exe_folder, "/", output)))
+  invisible(readLines(paste0(exe_folder, "/", out_file)))
   
 }

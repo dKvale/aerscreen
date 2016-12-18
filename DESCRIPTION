@@ -1,15 +1,14 @@
 Package: aerscreen
 Type: Package
-Title: Interface for EPA's air dispersion screening model AERSCREEN
+Title: Interface to EPA's air dispersion screening model AERSCREEN
 Version: 0.0.0.9000
 Authors@R: person("Dorian", "Kvale", email = "dorian.kvale@state.mn.us", role = c("aut", "cre"))
-Description: This package provides a dataframe based interface for performing AERSCREEN runs from R.
-Depends: R (>= 3.2.4)
-License: What license is it under?
+Description: A data frame interface for EPA's air dispersion screening model AERSCREEN.
+Depends: R (>= 3.0)
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1.9000
-Imports: dplyr,aermod
+Imports: dplyr, tibble, bpip, installEPA, aermod, receptors
 Suggests: knitr,rmarkdown
 VignetteBuilder: knitr
-Collate:     

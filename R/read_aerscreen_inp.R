@@ -1,11 +1,13 @@
 #' Read AERSCREEN input file
 #'
 #' Read an aerscreen.inp file or text into an AERSCREEN input table.
-#' @param file A path to a file or literal data as a character string. Default is "aerscreen.inp" in the working directory.
+#' @param file A path to a file or literal data as a character string. Default is "aerscreen.inp".
 #' @keywords read load aerscreen input
 #' @export
 #' @examples
-#' read_aerscreen_inp(file = "aermod.inp")
+#' aerscreen_inp <- 
+#' 
+#' read_aerscreen_inp(file = aerscreen_inp)
 # 
 #
 
@@ -143,5 +145,4 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   # COMBINE all inputs
   cbind(co, so, re, me, ou, po)
       
-  
 }

@@ -1,14 +1,13 @@
 #' Read AERSCREEN output file
 #'
 #' Read an aerscreen.out file or text into an AERSCREEN results table.
-#' @param file A path to a file or literal data as a character string. Default is "aerscreen.out" in the working directory.
+#' @param file A path to a file or literal data as a character string. Default is "aerscreen.out".
 #' @keywords read aerscreen load output results
 #' @export
 #' @examples
 #' read_aerscreen_out(file = "aerscreen.out")
 # 
 #
-
 
 read_aerscreen_out <- function(file = "aerscreen.out") {
   

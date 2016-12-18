@@ -2,26 +2,27 @@
 % Please edit documentation in R/run_aerscreen.R
 \name{run_aerscreen}
 \alias{run_aerscreen}
-\title{Run AERSCREEN.exe with designated input file}
+\title{Run AERSCREEN}
 \usage{
-run_aerscreen(input = aerscreen_inp, output = "aerscreen_results",
-  exe_folder = "aerscreen")
+run_aerscreen(input = "aerscreen.inp", output = input$TITLEONE,
+  exe_folder = "aerscreen/")
 }
 \arguments{
-\item{input}{AERSCREEN input data.frame. Defaults to aerscreen_inp. If a file path is used (e.g. "inputs/aerscreen.inp"), the model will be directed to use the input file.}
+\item{input}{AERSCREEN input file. Defaults to aerscreen_inp. A file path may be used (ex. "aerscreen.inp").}
 
-\item{output}{File name for model output. Defaults to "aerscreen_results".}
+\item{output}{File name for model output. Defaults to `TITLEONE` of input file.}
 
 \item{exe_folder}{aerscreen.exe location. Defaults to "aerscreen/".}
 }
 \description{
-Run AERSCREEN.exe with designated input file.
+Run aerscreen.exe with designated input file.
 }
 \examples{
-run_aerscreen(input = "inputs/aerscreen.inp", output = "output_test1")
+run_aerscreen(input = "inputs/aerscreen.inp", 
+              output = "output_test1")
 }
 \keyword{aermod}
 \keyword{aerscreen}
+\keyword{dispersion}
 \keyword{model}
-\keyword{run}
 

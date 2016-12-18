@@ -7,7 +7,7 @@
 read_aerscreen_out(file = "aerscreen.out")
 }
 \arguments{
-\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.out" in the working directory.}
+\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.out".}
 }
 \description{
 Read an aerscreen.out file or text into an AERSCREEN results table.
