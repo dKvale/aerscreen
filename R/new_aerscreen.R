@@ -5,7 +5,7 @@
 #' (2) Source parameters
 #' (3) Building parameters
 #' (4) Surface characteristics
-#' @param aerscreen Name for the joined input data frame added to Global Environment. 
+#' @param aerscreen Name for AERSCREEN input data frame added to Global Environment. 
 #'                  Default is "aerscreen_inp". Ignored if \code{as_one_df} is \code{FALSE}. 
 #' @param as_one_df \code{TRUE} or \code{FALSE}. 
 #'                  Return all inputs in a single wide data frame. 
@@ -40,8 +40,7 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                           control       = "control",
                           sources       = "sources",
                           buildings     = "buildings",
-                          surface       = "surface"
-                          ) {
+                          surface       = "surface") {
   
   # Create tables
   co <- tibble::tibble(near_receptor   = 1,
@@ -49,40 +48,19 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                        flagpole_height = as.numeric(NA),
                        debug_opt       = "N")
   
-  so <- dplyr::mutate(aermod::source_df(),
-                      source_id     = NULL,
-                      description   = NULL,
-                      elevation_m   = NULL,
-                      x_coord       = NULL,
-                      y_coord       = NULL,
-                      type          = NULL,
-                      emit_gs       = as.numeric(NA),
-                      height_m      = as.numeric(NA),
-                      temp_k        = as.numeric(NA),
-                      velocity_ms   = as.numeric(NA),
-                      diameter_m    = as.numeric(NA),
-                      downwash_file = NULL,
-                      urban_pop     = as.numeric(NA),
-                      group_id      = NULL)
+  so <- tibble::tibble(emit_gs       = as.numeric(NA),
+                       height_m      = as.numeric(NA),
+                       temp_k        = as.numeric(NA),
+                       velocity_ms   = as.numeric(NA),
+                       diameter_m    = as.numeric(NA),
+                       urban_pop     = as.numeric(NA))
   
-  bu <- dplyr::mutate(bpip::new_bpip(),
-                      prj_title           = NULL,
-                      bld_id              = NULL,
-                      bld_height          = as.numeric(NA),
-                      width_x             = as.numeric(NA),
-                      length_y            = as.numeric(NA),
-                      bld_rotation        = as.numeric(NA),
-                      angle_units         = NULL,
-                      bld_elev            = NULL,
-                      n_tiers             = NULL,
-                      bld_xcoords         = NULL,
-                      bld_ycoords         = NULL,
-                      dist_from_source    = as.numeric(NA),
-                      angle_from_source   = as.numeric(NA),
-                      source_name         = NULL,
-                      source_xy           = NULL,
-                      source_elev         = NULL,
-                      source_height       = NULL)
+  bu <- tibble::tibble(bld_height          = as.numeric(NA),
+                       width_x             = as.numeric(NA),
+                       length_y            = as.numeric(NA),
+                       bld_rotation        = as.numeric(NA),
+                       dist_from_source    = as.numeric(NA),
+                       angle_from_source   = as.numeric(NA))
   
   su <- surface_df() 
   

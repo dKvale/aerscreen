@@ -5,11 +5,11 @@
 \title{Create AERSCREEN input tables}
 \usage{
 new_aerscreen(aerscreen = "aerscreen_inp", as_one_df = TRUE,
-  control = "control", sources = "sources", buildings = "buildings",
-  surface = "surface", add_to_envir = FALSE)
+  add_to_envir = FALSE, control = "control", sources = "sources",
+  buildings = "buildings", surface = "surface")
 }
 \arguments{
-\item{aerscreen}{Name for the joined input data frame added to Global Environment. 
+\item{aerscreen}{Name for joined input data frame added to Global Environment. 
 Default is "aerscreen_inp". Ignored if \code{as_one_df} is \code{FALSE}.}
 
 \item{as_one_df}{\code{TRUE} or \code{FALSE}. 
@@ -19,6 +19,9 @@ If \code{FALSE}, return 4 data frames in a list:
     (2) sources
     (3) buildings
     (4) surface}
+
+\item{add_to_envir}{\code{TRUE} or \code{FALSE}. 
+Exports tables directly to the Global Environment.}
 
 \item{control}{Name for control options data frame added to Global Environment. 
 Default is "sources". Ignored if \code{as_one_df} is \code{TRUE}.}
@@ -31,9 +34,6 @@ Default is "buildings". Ignored if \code{as_one_df} is \code{TRUE}.}
 
 \item{surface}{Name for surface characteristics data frame added to Global Environment. 
 Default is "surface". Ignored if \code{as_one_df} is \code{TRUE}.}
-
-\item{add_to_envir}{\code{TRUE} or \code{FALSE}. 
-Exports tables directly to the Global Environment.}
 }
 \description{
 Create default AERSCREEN input data frames: 
