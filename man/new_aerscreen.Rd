@@ -4,64 +4,53 @@
 \alias{new_aerscreen}
 \title{Create AERSCREEN input tables}
 \usage{
-new_aerscreen(input_df = "aerscreen_inp", as_one_df = TRUE,
-  control = "control", sources = "sources", receptors = "receptors",
-  surface = "surface", met = "met", out = "out", add_to_envir = FALSE)
+new_aerscreen(aerscreen = "aerscreen_inp", as_one_df = TRUE,
+  control = "control", sources = "sources", buildings = "buildings",
+  surface = "surface", add_to_envir = FALSE)
 }
 \arguments{
-\item{input_df}{Name for the joined input data frame added to Global Environment. 
-Default is "aermod_inp". Ignored if \code{as_one_df} is \code{FALSE}.}
+\item{aerscreen}{Name for the joined input data frame added to Global Environment. 
+Default is "aerscreen_inp". Ignored if \code{as_one_df} is \code{FALSE}.}
 
 \item{as_one_df}{\code{TRUE} or \code{FALSE}. 
 Return all inputs in a single wide data frame. 
-If \code{FALSE}, return 6 data frames in a list: 
-    (1) control
+If \code{FALSE}, return 4 data frames in a list:
+    (1) control 
     (2) sources
-    (3) receptors
-    (4) surface
-    (5) meteorology
-    (6) output}
+    (3) buildings
+    (4) surface}
 
 \item{control}{Name for control options data frame added to Global Environment. 
-Default is "control". Ignored if \code{as_one_df} is \code{TRUE}.}
+Default is "sources". Ignored if \code{as_one_df} is \code{TRUE}.}
 
 \item{sources}{Name for emission source data frame added to Global Environment. 
 Default is "sources". Ignored if \code{as_one_df} is \code{TRUE}.}
 
-\item{receptors}{Name for receptor data frame added to Global Environment. 
-Default is "receptors". Ignored if \code{as_one_df} is \code{TRUE}.}
+\item{buildings}{Name for buildings data frame added to Global Environment. 
+Default is "buildings". Ignored if \code{as_one_df} is \code{TRUE}.}
 
 \item{surface}{Name for surface characteristics data frame added to Global Environment. 
 Default is "surface". Ignored if \code{as_one_df} is \code{TRUE}.}
-
-\item{met}{Name for meteorology options data frame added to Global Environment. 
-Default is "met". Ignored if \code{as_one_df} is \code{TRUE}.}
-
-\item{out}{Name for output options data frame added to Global Environment. 
-Default is "output". Ignored if \code{as_one_df} is \code{TRUE}.}
 
 \item{add_to_envir}{\code{TRUE} or \code{FALSE}. 
 Exports tables directly to the Global Environment.}
 }
 \description{
 Create default AERSCREEN input data frames: 
-(1) Control options 
+(1) Control options
 (2) Source parameters
-(3) Receptor parameters
-(4) Surface parameters
-(5) Meteorology options
-(6) Output options
+(3) Building parameters
+(4) Surface characteristics
 }
 \examples{
 input_tbl <- new_aerscreen(as_one_df = TRUE)
 
-new_aerscreen(as_one_df = FALSE, add_to_envir = TRUE, surf = "surface_chars")
+new_aerscreen(as_one_df = FALSE, add_to_envir = TRUE, surface = "surface_chars")
 
 input_list <- new_aerscreen(as_one_df = FALSE)
 }
 \keyword{aerscreen}
 \keyword{input}
 \keyword{new}
-\keyword{start}
 \keyword{tables}
 

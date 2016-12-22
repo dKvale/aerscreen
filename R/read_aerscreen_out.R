@@ -5,7 +5,7 @@
 #' @keywords read aerscreen load output results
 #' @export
 #' @examples
-#' read_aerscreen_out(file = "aerscreen.out")
+#' #read_aerscreen_out(file = "aerscreen.out")
 # 
 #
 

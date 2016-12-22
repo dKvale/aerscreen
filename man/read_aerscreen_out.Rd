@@ -13,7 +13,7 @@ read_aerscreen_out(file = "aerscreen.out")
 Read an aerscreen.out file or text into an AERSCREEN results table.
 }
 \examples{
-read_aerscreen_out(file = "aerscreen.out")
+#read_aerscreen_out(file = "aerscreen.out")
 }
 \keyword{aerscreen}
 \keyword{load}

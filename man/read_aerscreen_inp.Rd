@@ -13,9 +13,9 @@ read_aerscreen_inp(file = "aerscreen.inp")
 Read an aerscreen.inp file or text into an AERSCREEN input table.
 }
 \examples{
-aerscreen_inp <- 
+#aerscreen_inp <- 
 
-read_aerscreen_inp(file = aerscreen_inp)
+#read_aerscreen_inp(file = aerscreen_inp)
 }
 \keyword{aerscreen}
 \keyword{input}

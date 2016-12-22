@@ -5,13 +5,10 @@
 #' @keywords read load aerscreen input
 #' @export
 #' @examples
-#' aerscreen_inp <- 
+#' #aerscreen_inp <- 
 #' 
-#' read_aerscreen_inp(file = aerscreen_inp)
+#' #read_aerscreen_inp(file = aerscreen_inp)
 # 
-#
-
-
 read_aerscreen_inp <- function(file = "aerscreen.inp") {
   
   inp <- readLines(file)
@@ -25,7 +22,7 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
                  header = FALSE, 
                  stringsAsFactors = FALSE)
   
-  co <- control_tbl()
+  co <- control_df()
   
   co$TITLEONE <- df[1, 2]
   co$TITLETWO <- df[2, 2]
@@ -34,7 +31,7 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   co$POLLUTID <- df[5, 2]
       
   # SOURCE OPTIONS
-  so <- source_tbl()
+  so <- source_df()
   
   # SOURCE locations
   start <- grep("LOCATION", inp)[1]
@@ -42,7 +39,7 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   
   df <- gsub("[[:space:]]+", ",", inp[start:end][!grepl("DESCRSRC", inp[start:end])])
   
-  df <- read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
 
   so$ID       <- df[ , 3]
   so$TYPE     <- df[ , 4]
@@ -58,11 +55,11 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   
   df <- gsub("[[:space:]]+", ",", inp[start:end])
   
-  df <- read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
   
   so$EMISS    <- df[ , 4]
   so$HEIGHT   <- df[ , 5]
-  so$TEMPK    <- df[ , 6]
+  so$TEMP    <- df[ , 6]
   so$VELOCITY <- df[ , 7]
   so$DIAMETER <- df[ , 8]
   
@@ -73,7 +70,7 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   start <- grep("SRCGROUP", inp)[1]
   end   <- max(grep("SRCGROUP", inp))
   
-  df <- read.fwf(textConnection(inp[start:end]), 
+  df <- utils::read.fwf(textConnection(inp[start:end]), 
                  widths = c(12, 8, nchar(inp[start])-20), 
                  header = FALSE, 
                  stringsAsFactors = FALSE)
@@ -111,7 +108,7 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   start <- grep("OU STARTING", inp) + 1
   end   <- grep("OU FINISHED", inp) - 1
   
-  df <- read.fwf(textConnection(inp[start:end][!grepl("[**]", inp[start:end])]), 
+  df <- utils::read.fwf(textConnection(inp[start:end][!grepl("[**]", inp[start:end])]), 
                  widths = c(12, max(nchar(inp[start:end])) - 12), 
                  header = FALSE, 
                  stringsAsFactors = FALSE)
@@ -123,26 +120,9 @@ read_aerscreen_inp <- function(file = "aerscreen.inp") {
   ou$DAYTABLE <- subset(df, V1 == "   DAYTABLE ")[ , 2]
   ou$PLOTFILE <- subset(df, V1 == "   PLOTFILE ")[ , 2]
       
-  # PROJECT
-  start <- grep("PROJCTN", inp)
-  end   <- grep("ZONEINX", inp)
   
-  df <- read.fwf(textConnection(inp[start:end]), 
-                 widths = c(12, max(nchar(inp[start:end])) - 12), 
-                 header = FALSE, 
-                 stringsAsFactors = FALSE)
   
-  po <- project_tbl
-  
-  po$PROJCTN  <- df[1, 2]
-  po$DESCPTN  <- df[2, 2]
-  po$DATUM    <- df[3, 2]
-  po$DTMRGN   <- df[4, 2]
-  po$UNITS    <- df[5, 2]
-  po$ZONE     <- df[6, 2]
-  po$ZONEINX  <- df[7, 2]
-      
   # COMBINE all inputs
-  cbind(co, so, re, me, ou, po)
+  cbind(co, so, re, me, ou)
       
 }

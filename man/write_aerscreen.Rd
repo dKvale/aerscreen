@@ -4,26 +4,25 @@
 \alias{write_aerscreen}
 \title{Write a data frame to an AERSCREEN input file}
 \usage{
-write_aerscreen(data = NULL, path = NULL, control = NULL,
-  sources = NULL, receptors = NULL, surface = NULL, met = NULL,
-  out = NULL)
+write_aerscreen(data = NULL, path = NULL, results_file = as.character(NA),
+  control = NULL, sources = NULL, buildings = NULL, surface = NULL)
 }
 \arguments{
 \item{data}{Data frame of AERSCREEN modeling parameters.}
 
-\item{path}{Path to write to. Defaults to "aerscreen.inp".}
+\item{path}{Path to write input file to. If blank, returns a character string.
+Defaults to "aerscreen.inp".}
+
+\item{results_file}{File to save AERSCREEN modeling results to. 
+Defaults to "aerscreen.out".}
 
 \item{control}{Data frame of control parameters. If blank, control parameters from \code{data} are used.}
 
 \item{sources}{Data frame of source parameters. If blank, source parameters from \code{data} are used.}
 
-\item{receptors}{Data frame of receptor parameters. If blank, receptor parameters from \code{data} are used.}
+\item{buildings}{Data frame of building parameters for BPIP. If blank, building parameters from \code{data} are used.}
 
 \item{surface}{Data frame of surface characteristics. If blank, surface characteristics from \code{data} are used.}
-
-\item{met}{Data frame of meteorology parameters. If blank, meteorology parameters from \code{data} are used.}
-
-\item{out}{Data frame of output parameters. If blank, output parameters from \code{data} are used.}
 }
 \description{
 Output an AERSCREEN input file from a data frame of AERSCREEN parameters.

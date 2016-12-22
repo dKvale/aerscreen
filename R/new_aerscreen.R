@@ -1,117 +1,122 @@
 #' Create AERSCREEN input tables
 #'
 #' Create default AERSCREEN input data frames: 
-#' (1) Control options 
+#' (1) Control options
 #' (2) Source parameters
-#' (3) Receptor parameters
-#' (4) Surface parameters
-#' (5) Meteorology options
-#' (6) Output options
+#' (3) Building parameters
+#' (4) Surface characteristics
+#' @param aerscreen Name for the joined input data frame added to Global Environment. 
+#'                  Default is "aerscreen_inp". Ignored if \code{as_one_df} is \code{FALSE}. 
 #' @param as_one_df \code{TRUE} or \code{FALSE}. 
 #'                  Return all inputs in a single wide data frame. 
-#'                  If \code{FALSE}, return 6 data frames in a list: 
-#'                      (1) control
+#'                  If \code{FALSE}, return 4 data frames in a list:
+#'                      (1) control 
 #'                      (2) sources
-#'                      (3) receptors
+#'                      (3) buildings
 #'                      (4) surface
-#'                      (5) meteorology
-#'                      (6) output
 #' @param add_to_envir \code{TRUE} or \code{FALSE}. 
 #'                     Exports tables directly to the Global Environment.
-#' @param input_df Name for the joined input data frame added to Global Environment. 
-#'                 Default is "aermod_inp". Ignored if \code{as_one_df} is \code{FALSE}. 
 #' @param control Name for control options data frame added to Global Environment. 
-#'                Default is "control". Ignored if \code{as_one_df} is \code{TRUE}. 
+#'                Default is "sources". Ignored if \code{as_one_df} is \code{TRUE}.
 #' @param sources Name for emission source data frame added to Global Environment. 
 #'                Default is "sources". Ignored if \code{as_one_df} is \code{TRUE}.
-#' @param receptors Name for receptor data frame added to Global Environment. 
-#'                  Default is "receptors". Ignored if \code{as_one_df} is \code{TRUE}.
+#' @param buildings Name for buildings data frame added to Global Environment. 
+#'                  Default is "buildings". Ignored if \code{as_one_df} is \code{TRUE}.
 #' @param surface Name for surface characteristics data frame added to Global Environment. 
 #'                Default is "surface". Ignored if \code{as_one_df} is \code{TRUE}.
-#' @param met Name for meteorology options data frame added to Global Environment. 
-#'            Default is "met". Ignored if \code{as_one_df} is \code{TRUE}.
-#' @param out Name for output options data frame added to Global Environment. 
-#'            Default is "output". Ignored if \code{as_one_df} is \code{TRUE}.
-#' @keywords aerscreen input new start tables
+#' @keywords aerscreen input new tables
 #' @export
 #' @examples
 #' input_tbl <- new_aerscreen(as_one_df = TRUE)
 #' 
-#' new_aerscreen(as_one_df = FALSE, add_to_envir = TRUE, surf = "surface_chars")
+#' new_aerscreen(as_one_df = FALSE, add_to_envir = TRUE, surface = "surface_chars")
 #' 
 #' input_list <- new_aerscreen(as_one_df = FALSE)
 # 
 #
-
-
-new_aerscreen <- function(input_df      = "aerscreen_inp",
+new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                           as_one_df     = TRUE,
+                          add_to_envir  = FALSE,
                           control       = "control",
                           sources       = "sources",
-                          receptors     = "receptors",
-                          surface       = "surface",
-                          met           = "met",
-                          out           = "out",
-                          add_to_envir  = FALSE) {
+                          buildings     = "buildings",
+                          surface       = "surface"
+                          ) {
   
-  co <- control_tbl(model_opt = c("CONC", "SCREEN",  "FLAT"),
-                    avg_time  = 1)
+  # Create tables
+  co <- tibble::tibble(near_receptor   = 1,
+                       far_receptor    = 500,
+                       flagpole_height = as.numeric(NA),
+                       debug_opt       = "N")
   
-  so <- source_tbl(group_id = "ALL")
+  so <- dplyr::mutate(aermod::source_df(),
+                      source_id     = NULL,
+                      description   = NULL,
+                      elevation_m   = NULL,
+                      x_coord       = NULL,
+                      y_coord       = NULL,
+                      type          = NULL,
+                      emit_gs       = as.numeric(NA),
+                      height_m      = as.numeric(NA),
+                      temp_k        = as.numeric(NA),
+                      velocity_ms   = as.numeric(NA),
+                      diameter_m    = as.numeric(NA),
+                      downwash_file = NULL,
+                      urban_pop     = as.numeric(NA),
+                      group_id      = NULL)
   
-  re <- receptor_tbl() 
+  bu <- dplyr::mutate(bpip::new_bpip(),
+                      prj_title           = NULL,
+                      bld_id              = NULL,
+                      bld_height          = as.numeric(NA),
+                      width_x             = as.numeric(NA),
+                      length_y            = as.numeric(NA),
+                      bld_rotation        = as.numeric(NA),
+                      angle_units         = NULL,
+                      bld_elev            = NULL,
+                      n_tiers             = NULL,
+                      bld_xcoords         = NULL,
+                      bld_ycoords         = NULL,
+                      dist_from_source    = as.numeric(NA),
+                      angle_from_source   = as.numeric(NA),
+                      source_name         = NULL,
+                      source_xy           = NULL,
+                      source_elev         = NULL,
+                      source_height       = NULL)
   
-  su <- surface_tbl() 
+  su <- surface_df() 
   
-  me <- met_tbl(surf_file      = "aerscreen_01_01.sfc  FREE",
-                surf_site_info = "11111   2010  SCREEN",
-                prof_file      = "aerscreen_01_01.pfl  FREE",                                                                                                                                                                                                                    
-                upper_air_info = "22222   2010  SCREEN",                                                                                                                                                                                                                         
-                base_elev_m    =  "0.0")
-  
-  ou <- out_tbl(rect_table = c("1", "FIRST"),
-                max_table  = c("ALLAVE", "50"),
-                file_form  = "EXP",
-                rank_file  = c("1", "10", "AERSCREEN.FIL"),
-                plot_file  = c("1", "ALL", "FIRST", "AERSCREEN.PLT"))
-  
+  # Output
   if(as_one_df) {
     
-    aerscreen_inp <- cbind(co, so, re, su, me, ou)
+    aerscreen_inp <- tibble::as_data_frame(cbind(co, so, bu, su))
     
-    if(add_to_envir) assign(input_df, aerscreen_inp, pos = 1)
+    if(add_to_envir) assign(aerscreen, aerscreen_inp, pos = 1)
     
   } else {
     
     if(add_to_envir) {
       
-      # 1 - CONTROL OPTIONS
+      # 1 - Control
       assign(control, co, pos = 1)
       
-      # 2 - SOURCES
+      # 2 - Sources
       assign(sources, so, pos = 1)
       
-      # 3- RECEPTORS
-      assign(receptors, re, pos = 1)
+      # 3- Buildings
+      assign(buildings, bu, pos = 1)
       
-      # 4- SURFACE CHARACTERISTICS
-      assign(surf, su, pos = 1)
+      # 4- Surface characteristics
+      assign(surface, su, pos = 1)
       
-      # 5- METEOROLOGY OPTIONS
-      assign(met, me, pos = 1)
-      
-      # 5- OUTPUT OPTIONS
-      assign(out, ou, pos = 1)
     }
     
     aerscreen_inp <- list(control    = co,
                           sources    = so,
-                          receptors  = re,
-                          surface    = su,
-                          met        = me,
-                          out        = ou)
+                          buildings  = bu,
+                          surface    = su)
     
-    names(aerscreen_inp) <- c(control, sources, receptors, surface, met, out)
+    names(aerscreen_inp) <- c(control, sources, buildings, surface)
   }
   
   return(aerscreen_inp)
