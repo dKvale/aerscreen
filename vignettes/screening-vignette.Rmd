@@ -16,30 +16,75 @@ vignette: >
 Compare the AERSCREEN dispersion results for a facility with buidings nearby to the results if the buildings are removed.
 
 ## Install AERSCREEN and supporting models to 'EPA' folder
-```{r }
+```{r eval = F}
 library(installEPA)
-#install_epa(c("aerscreen", "bpip", "aermod", "aermap","makemet"), "EPA")
+install_epa(c("aerscreen", "bpip", "aermod", "makemet"), exdir = "EPA", add_model_folder = FALSE)
 
 ```
-
 
 ## Create new aerscreen table
-```{r }
-#library(aerscreen)
-#aer_inp <- aerscreen_tbl()
+```{r eval = T}
+library(aerscreen)
+aer_inp <- new_aerscreen()
 
 library(knitr)
-#kable(aer_inp)
+kable(aer_inp)
 ```
 
+## Assign source parameters
+```{r eval = T}
+library(dplyr)
+
+aer_inp <- mutate(aer_inp,
+                  emit_gs       = 1,      # average emissions in  grams/second
+                  height_m      = 10,     # stack height in meters
+                  temp_k        = 310,    # exit temperature in Kelvin
+                  velocity_ms   = 20,     # exit velocity in meters/second
+                  diameter_m    = 2,      # inner stack diameter in meters
+                  urban_pop     = 400000)  # population of surrounding urban area
+
+```
+
+
+## Set modeling distance
+```{r eval = T}
+library(dplyr)
+
+aer_inp <- mutate(aer_inp,
+                  near_receptor   = 1,     # distance from source to nearest modeling receptor in meters
+                  far_receptor    = 500)   # distance to furthest modeling receptor in meters
+
+```
+
+
+## Set surface characteristics for modeling domain
+```{r eval = T}
+library(dplyr)
+
+aer_inp <- mutate(aer_inp,
+                  min_temp_k       = min_temp_k,
+                  max_temp_k       = max_temp_k,
+                  min_wind_speed   = min_wind_speed,
+                  anem_height      = anem_height,
+                  surface_profile  = surface_profile,
+                  climate_profile  = climate_profile,
+                  albedo           = albedo,
+                  bowen            = bowen,
+                  z_length         = z_length) 
+```
+
+
+## Assuming no buildings for downwash
+
+
 ## Create aerscreen input file
-```{r }
-#write_aerscreen(aer_inp, "no_builds.inp")
+```{r eval = T}
+write_aerscreen(aer_inp, "no_builds.inp")
 ```
 
 ## Run aerscreen
-```{r }
-#run_aerscreen("no_builds.inp", "no_builds_results")
+```{r eval = F}
+run_aerscreen("no_builds.inp", "no_builds_results")
 ```
 
 ## Read results
