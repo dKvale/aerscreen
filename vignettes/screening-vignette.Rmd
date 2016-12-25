@@ -18,8 +18,16 @@ Compare the AERSCREEN dispersion results for a facility with buidings nearby to 
 ## Install AERSCREEN and supporting models to 'EPA' folder
 ```{r eval = F}
 library(installEPA)
-install_epa(c("aerscreen", "bpip", "aermod", "makemet"), exdir = "EPA", add_model_folder = FALSE)
+install_epa(c("aerscreen", "bpip", "aermod", "makemet"), dir = "EPA", add_model_folder = FALSE)
 
+# Copy aermod.exe into AERSCREEN folder
+install_dir <- paste0(getwd(), '/EPA')
+
+relocate <- paste0(substring(getwd(), 1, 2), " & CD ", install_dir)
+
+shell(paste0(relocate, '/', list.files(install_dir)[grepl("aermod", list.files(install_dir))][1], 
+             ' & COPY "', "aermod.exe", '" "', install_dir, '/aermod.exe"'))
+  
 ```
 
 ## Create new aerscreen table
@@ -32,64 +40,75 @@ kable(aer_inp)
 ```
 
 ## Assign source parameters
-```{r eval = T}
+```{r eval = T, warning=F, message=F}
 library(dplyr)
 
 aer_inp <- mutate(aer_inp,
-                  emit_gs       = 1,      # average emissions in  grams/second
-                  height_m      = 10,     # stack height in meters
-                  temp_k        = 310,    # exit temperature in Kelvin
-                  velocity_ms   = 20,     # exit velocity in meters/second
-                  diameter_m    = 2,      # inner stack diameter in meters
-                  urban_pop     = 400000)  # population of surrounding urban area
+                  emit_gs       = 1,      # Average emissions in  grams/second
+                  height_m      = 10,     # Stack height in meters
+                  temp_k        = 310,    # Exit temperature in Kelvin
+                  velocity_ms   = 20,     # Exit velocity in meters/second
+                  diameter_m    = 2,      # Inner stack diameter in meters
+                  urban_pop     = 400000) # Population of surrounding urban area
 
 ```
 
 
 ## Set modeling distance
 ```{r eval = T}
-library(dplyr)
-
 aer_inp <- mutate(aer_inp,
-                  near_receptor   = 1,     # distance from source to nearest modeling receptor in meters
-                  far_receptor    = 500)   # distance to furthest modeling receptor in meters
+                  near_receptor   = 1,     # Distance from source to nearest modeling receptor in meters
+                  far_receptor    = 500)   # Distance to furthest modeling receptor in meters
 
 ```
 
 
 ## Set surface characteristics for modeling domain
 ```{r eval = T}
-library(dplyr)
-
 aer_inp <- mutate(aer_inp,
-                  min_temp_k       = min_temp_k,
-                  max_temp_k       = max_temp_k,
-                  min_wind_speed   = min_wind_speed,
-                  anem_height      = anem_height,
-                  surface_profile  = surface_profile,
-                  climate_profile  = climate_profile,
-                  albedo           = albedo,
-                  bowen            = bowen,
-                  z_length         = z_length) 
+                  surface_profile  = 7,    # Urban area
+                  climate_profile  = 1)    # Average moisture conditions
 ```
 
 
-## Assuming no buildings for downwash
+## Assume no buildings for downwash
 
 
 ## Create aerscreen input file
 ```{r eval = T}
-write_aerscreen(aer_inp, "no_builds.inp")
+write_aerscreen(aer_inp, "EPA/no_builds.inp", out_file = "no_builds.out")
 ```
 
-## Run aerscreen
+
+## Run aerscreen from input text file
 ```{r eval = F}
-run_aerscreen("no_builds.inp", "no_builds_results")
+no_build_results <- run_aerscreen("EPA/no_builds.inp", 
+                                  out_file   = "no_build_results",
+                                  exe_folder = "EPA")
 ```
 
-## Read results
+## View results as data frame
+```{r eval = F}
+no_build_results <- read_aerscreen_out("no_build_results.out")
+
+kable(no_build_results)
+
+```
+
+
+## Create input file with building
+```{r eval = F}
+# Load input file
+with_build_inp <- read_aerscreen_inp("EPA/no_builds.inp")
+
+
+```
+## Run building input file
+
+
+## Compare results
 ```{r }
-#results <- read_aerscreen_out("no_builds_results.out", as_text = FALSE)
+no_build_results <- read_aerscreen_out("no_builds_results.out", as_text = FALSE)
 
 #kable(results)
 ```

@@ -4,18 +4,30 @@
 \alias{read_aerscreen_inp}
 \title{Read AERSCREEN input file}
 \usage{
-read_aerscreen_inp(file = "aerscreen.inp")
+read_aerscreen_inp(path, as_one_df = TRUE)
 }
 \arguments{
-\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.inp".}
+\item{path}{A path to a file or data as a character string.}
+
+\item{as_one_df}{\code{TRUE} or \code{FALSE}. 
+Return all inputs in a single wide data frame. 
+If \code{FALSE}, 4 data frames are returned in a list: 
+       (1) control
+       (2) sources
+       (3) buildings
+       (4) surface}
 }
 \description{
 Read an aerscreen.inp file or text into an AERSCREEN input table.
 }
 \examples{
-#aerscreen_inp <- 
+\dontrun{
+aerscreen_inp <- new_aerscreen()
 
-#read_aerscreen_inp(file = aerscreen_inp)
+write_aerscreen(aerscreen_inp, "aerscreen.inp")
+
+read_aerscreen_inp(file = "aerscreen.inp")
+}
 }
 \keyword{aerscreen}
 \keyword{input}

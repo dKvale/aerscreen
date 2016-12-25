@@ -4,16 +4,18 @@
 \alias{read_aerscreen_out}
 \title{Read AERSCREEN output file}
 \usage{
-read_aerscreen_out(file = "aerscreen.out")
+read_aerscreen_out(path)
 }
 \arguments{
-\item{file}{A path to a file or literal data as a character string. Default is "aerscreen.out".}
+\item{path}{A path to a file or data as a character string.}
 }
 \description{
-Read an aerscreen.out file or text into an AERSCREEN results table.
+Read an aerscreen.out file into an AERSCREEN results table.
 }
 \examples{
-#read_aerscreen_out(file = "aerscreen.out")
+\dontrun{
+read_aerscreen_out(file = "aerscreen.out")
+}
 }
 \keyword{aerscreen}
 \keyword{load}

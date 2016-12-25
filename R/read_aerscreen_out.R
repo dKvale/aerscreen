@@ -1,63 +1,58 @@
 #' Read AERSCREEN output file
 #'
-#' Read an aerscreen.out file or text into an AERSCREEN results table.
-#' @param file A path to a file or literal data as a character string. Default is "aerscreen.out".
+#' Read an aerscreen.out file into an AERSCREEN results table.
+#' @param path A path to a file or data as a character string.
 #' @keywords read aerscreen load output results
 #' @export
 #' @examples
-#' #read_aerscreen_out(file = "aerscreen.out")
+#' \dontrun{
+#' read_aerscreen_out(file = "aerscreen.out")
+#' }
 # 
 #
-
-read_aerscreen_out <- function(file = "aerscreen.out") {
+read_aerscreen_out <- function(path) {
   
-  out <- readLines(file)
-
-  # Read dispersion tables
-  results_all <- data.frame()
+  if("character" %in% class(path)) {
+    
+    if(!"\n" %in% path) out <- readLines(path)
+    
+  } else stop("'file' is of class", class(path), ". Enter a file path")
   
+  out <- out[!grepl("[**] | --", out)]
+  
+  out <- subset(out, !out %in% c("", "\n"))
+
+  # Read dispersion results
   options(digits = 10)
   
-  for(line in grep("GROUP:", out)) {
+  start <- grep("PROCEDURE", out)[1] + 1
     
-    start <- line + grep("X-COORD", out[line:length(out)])[1] + 1
+  end   <- start + 1
     
-    end   <- start + grep("[***]", out[start:length(out)])[1] - 2
+  df <- gsub("[[:space:]]+", ",", out[start])
     
-    df <- gsub("[[:space:]]+", ",", out[start:end])
+  df <- read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
     
-    df <- read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  df <- df[ , -c(1:3, ncol(df))]
     
-    df <- df[ , -c(1, ncol(df))]
-    
-    n_col <- ncol(df)
-    
-    names(df) <- rep('x', n_col)
-    
-    df <- rbind(df[ , 1:(n_col/2)], df[ , (n_col/2+1):n_col])
-    
-    if(ncol(df) < 4) df$date <- NA
-    
-    names(df) <- c('x','y','concentration','date')
+  names(df) <- c("max_1hr_conc", "max_3hr_conc", "max_8hr_conc", "max_24hr_conc", "max_annual_conc")
   
-    df$type    <- strsplit(strsplit(out[line], "THE[[:space:]]+")[[1]][2], "[[:space:]]+VALUES")[[1]][1]
-    
-    df$group   <- strsplit(strsplit(out[line], "GROUP:[[:space:]]+")[[1]][2], "[[:space:]]+[***]")[[1]][1]
-    
-    df$sources <- strsplit(out[line+1], ":[[:space:]]+")[[1]][2]
-    
-    results_all <- rbind(results_all, df)
+  df$conc_units <- "ug/m3"
   
-  }
+  ## Add receptor distance
+  receptor_distance <- strsplit(out[end], " ")[[1]]
   
-  # Get AERMOD version
-  cat(paste0("AERMOD version #", substring(out[grep("VERSION", out)][1], 25, 29), "\n\n"))
+  receptor_distance <- receptor_distance[grepl("[.]", receptor_distance)]
   
-  # Read source names
-  cat(paste0("Source list: ", paste0(substring(out[grep("LOCATION", out)], 13, 24), collapse = " ")), "\n\n")
+  df$receptor_distance <- as.numeric(receptor_distance)
   
-  # Read AERMOD messages
-  cat(paste0(out[(grep("Summary of Total", out)[2]) : (grep("FATAL ERROR", out)[2] - 3)], collapse = "\n"), "\n")
+  df$dist_units <- "meters"
   
-  return(results_all)
+  # Get AERSCREEN version
+  cat(paste0("Model version:", out[1], "\n\n"))
+  
+  # Read AERSCREEN messages
+  #cat(paste0(out[(grep("Summary of Total", out)[2]) : (grep("FATAL ERROR", out)[2] - 3)], collapse = "\n"), "\n")
+  
+  return(df)
 }

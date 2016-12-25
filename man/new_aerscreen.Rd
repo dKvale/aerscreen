@@ -9,7 +9,7 @@ new_aerscreen(aerscreen = "aerscreen_inp", as_one_df = TRUE,
   buildings = "buildings", surface = "surface")
 }
 \arguments{
-\item{aerscreen}{Name for joined input data frame added to Global Environment. 
+\item{aerscreen}{Name for AERSCREEN input data frame added to Global Environment. 
 Default is "aerscreen_inp". Ignored if \code{as_one_df} is \code{FALSE}.}
 
 \item{as_one_df}{\code{TRUE} or \code{FALSE}. 

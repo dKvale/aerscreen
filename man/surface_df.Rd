@@ -37,7 +37,7 @@ Defaults to \code{7}. Options:
 Enter \code{0} if providing site specific albedo, Bowen ratio and surface roughness. 
 Defaults to \code{1}. Options: 
 (0) None. User specified characteristics will be used. 
-(1) Average moisture
+(1) Average moisture conditions
 (2) Wet conditions
 (3) Dry conditions}
 

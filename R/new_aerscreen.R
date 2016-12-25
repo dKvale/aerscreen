@@ -33,7 +33,6 @@
 #' 
 #' input_list <- new_aerscreen(as_one_df = FALSE)
 # 
-#
 new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                           as_one_df     = TRUE,
                           add_to_envir  = FALSE,
@@ -45,6 +44,7 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
   # Create tables
   co <- tibble::tibble(near_receptor   = 1,
                        far_receptor    = 500,
+                       adjust_ustar    = "Y",
                        flagpole_height = as.numeric(NA),
                        debug_opt       = "N")
   
@@ -55,9 +55,10 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                        diameter_m    = as.numeric(NA),
                        urban_pop     = as.numeric(NA))
   
-  bu <- tibble::tibble(bld_height          = as.numeric(NA),
-                       width_x             = as.numeric(NA),
-                       length_y            = as.numeric(NA),
+  bu <- tibble::tibble(bpip_run            = "N",
+                       bld_height          = as.numeric(NA),
+                       long_side           = as.numeric(NA),
+                       short_side          = as.numeric(NA),
                        bld_rotation        = as.numeric(NA),
                        dist_from_source    = as.numeric(NA),
                        angle_from_source   = as.numeric(NA))

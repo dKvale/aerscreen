@@ -1,128 +1,149 @@
 #' Read AERSCREEN input file
 #'
 #' Read an aerscreen.inp file or text into an AERSCREEN input table.
-#' @param file A path to a file or literal data as a character string. Default is "aerscreen.inp".
+#' @param path A path to a file or data as a character string. 
+#' @param as_one_df \code{TRUE} or \code{FALSE}. 
+#'                  Return all inputs in a single wide data frame. 
+#'                  If \code{FALSE}, 4 data frames are returned in a list: 
+#'                         (1) control
+#'                         (2) sources
+#'                         (3) buildings
+#'                         (4) surface
 #' @keywords read load aerscreen input
 #' @export
 #' @examples
-#' #aerscreen_inp <- 
+#' \dontrun{
+#' aerscreen_inp <- new_aerscreen()
 #' 
-#' #read_aerscreen_inp(file = aerscreen_inp)
+#' write_aerscreen(aerscreen_inp, "aerscreen.inp")
+#' 
+#' read_aerscreen_inp(file = "aerscreen.inp")
+#' }
 # 
-read_aerscreen_inp <- function(file = "aerscreen.inp") {
+read_aerscreen_inp <- function(path, 
+                               as_one_df   = TRUE) {
   
-  inp <- readLines(file)
+  if("character" %in% class(path)) {
+    
+    if(!"\n" %in% path) inp <- readLines(path)
+    
+  } else stop("'file' is of class", class(path), ". Enter a file path")
   
-  # CONTROL OPTIONS
-  start <- grep("CO STARTING", inp) + 1
-  end   <- grep("CO FINISHED", inp) - 1 
   
-  df <- read.fwf(textConnection(inp[start:end]), 
-                 widths = c(12, nchar(inp[start]) - 12), 
-                 header = FALSE, 
-                 stringsAsFactors = FALSE)
-  
-  co <- control_df()
-  
-  co$TITLEONE <- df[1, 2]
-  co$TITLETWO <- df[2, 2]
-  co$MODELOPT <- df[3, 2]
-  co$AVERTIME <- df[4, 2]
-  co$POLLUTID <- df[5, 2]
-      
-  # SOURCE OPTIONS
-  so <- source_df()
-  
-  # SOURCE locations
-  start <- grep("LOCATION", inp)[1]
-  end   <- max(grep("LOCATION", inp))
-  
-  df <- gsub("[[:space:]]+", ",", inp[start:end][!grepl("DESCRSRC", inp[start:end])])
-  
-  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
-
-  so$ID       <- df[ , 3]
-  so$TYPE     <- df[ , 4]
-  so$XCOORD   <- df[ , 5]
-  so$YCOORD   <- df[ , 6]
-  so$ELEV     <- df[ , 7]
-  
-  so$DESCRSRC <- ""
+  inp <- inp[grepl("[**]", inp) | grepl("TITLEONE", inp)]
   
   # SOURCE parameters
-  start <- grep("SRCPARAM", inp)[1]
-  end   <- max(grep("SRCPARAM", inp))
+  start <- grep("STACK DATA", inp)[1] + 1
+  end   <- start
   
   df <- gsub("[[:space:]]+", ",", inp[start:end])
   
   df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
   
-  so$EMISS    <- df[ , 4]
-  so$HEIGHT   <- df[ , 5]
-  so$TEMP    <- df[ , 6]
-  so$VELOCITY <- df[ , 7]
-  so$DIAMETER <- df[ , 8]
+  so <- tibble::tibble(emit_gs      = df[ , 2],
+                       height_m     = df[ , 3],
+                       temp_k       = df[ , 4],
+                       velocity_ms  = df[ , 5],
+                       diameter_m   = df[ , 6],
+                       urban_pop    = 0)
   
-  # SOURCE downwash
-  so$DOWNFILE <- ""
+  # BUILDING parameters
+  start <- grep("BUILDING DATA", inp)[1] + 1
+  end   <- start
   
-  # SOURCE groups
-  start <- grep("SRCGROUP", inp)[1]
-  end   <- max(grep("SRCGROUP", inp))
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
   
-  df <- utils::read.fwf(textConnection(inp[start:end]), 
-                 widths = c(12, 8, nchar(inp[start])-20), 
-                 header = FALSE, 
-                 stringsAsFactors = FALSE)
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
   
-  so$GROUPID  <- df[ , 2]
-  so$GROUPSRC <- df[ , 3]
-      
-  # RECEPTORS
-  start <- grep("RE STARTING", inp)[1] + 1
-  end   <- max(grep("RE FINISHED", inp)) - 1
+  bu <- tibble::tibble(bpip_run            = df[ , 2],
+                       bld_height          = df[ , 3],
+                       long_side           = df[ , 4],
+                       short_side          = df[ , 5],
+                       bld_rotation        = df[ , 6],
+                       dist_from_source    = df[ , 8],
+                       angle_from_source   = df[ , 7])
+                       
+  # SURFACE Characteristics
+  start <- grep("MAKEMET DATA", inp)[1] + 1
+  end   <- start
   
-  re <- receptor_tbl()
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
   
-  re$RECTFILE <- strsplit(inp[start:end][grep("INCLUDED", inp[start:end])], "INCLUDED ")[[1]][2]
-      
-  # METEOROLOGY
-  start <- grep("ME STARTING", inp) + 1
-  end   <- grep("ME FINISHED", inp) - 1 
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
   
-  df <- read.fwf(textConnection(inp[start:end]), 
-                 widths = c(12, max(nchar(inp[start:end])) - 12), 
-                 header = FALSE, 
-                 stringsAsFactors = FALSE)
+  su <- tibble::tibble(min_temp_k       = df[ , 2],
+                       max_temp_k       = df[ , 3],
+                       min_wind_speed   = df[ , 4],
+                       anem_height      = df[ , 5],
+                       surface_profile  = df[ , 6],
+                       climate_profile  = df[ , 7],
+                       albedo           = df[ , 8],
+                       bowen            = df[ , 9],
+                       z_length         = df[ , 10])
   
-  me <- new("MeteorologyOptions")
+  # CONTROL OPTIONS
+  ## ADJUST U*
+  start <- grep("ADJUST U", inp)
+  end   <- start
   
-  me$SURFFILE <- df[1, 2]
-  me$PROFFILE <- df[2, 2]
-  me$SURFDATA <- df[3, 2]
-  me$UAIRDATA <- df[4, 2]
-  me$PROFBASE <- df[5, 2]
-  me$STARTEND <- df[6, 2]
-      
-  # OUTPUT
-  start <- grep("OU STARTING", inp) + 1
-  end   <- grep("OU FINISHED", inp) - 1
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
   
-  df <- utils::read.fwf(textConnection(inp[start:end][!grepl("[**]", inp[start:end])]), 
-                 widths = c(12, max(nchar(inp[start:end])) - 12), 
-                 header = FALSE, 
-                 stringsAsFactors = FALSE)
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
   
-  ou <- out_tbl()
+  co <- tibble::tibble(near_receptor   = 1,
+                       far_receptor    = 500,
+                       adjust_ustar    = df[ , 4],
+                       flagpole_height = 0,
+                       debug_opt       = "N")
   
-  ou$RECTABLE <- subset(df, V1 == "   RECTABLE ")[ , 2]
-  ou$MAXTABLE <- subset(df, V1 == "   MAXTABLE ")[ , 2]
-  ou$DAYTABLE <- subset(df, V1 == "   DAYTABLE ")[ , 2]
-  ou$PLOTFILE <- subset(df, V1 == "   PLOTFILE ")[ , 2]
-      
+  ## Far receptor / modeling domain
+  start <- grep("TERRAIN DATA", inp) + 1
+  end   <- start
+  
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
+  
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  
+  co$far_receptor <- df[ , 7]
+  
+  ## POPULATION & FLAGPOLE
+  start <- grep("UNITS/POPULATION", inp) + 1
+  end   <- start
+  
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
+  
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  
+  so$urban_pop       <- df[ , 4]
+  
+  co$near_receptor   <- df[ , 5]
+  
+  co$flagpole_height <- df[ , 6]
+  
+  ## DEBUG On/Off
+  start <- grep("DEBUG OPTION", inp) + 1
+  end   <- start
+  
+  df <- gsub("[[:space:]]+", ",", inp[start:end])
+  
+  df <- utils::read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
+  
+  co$debug_opt    <- df[ , 2]
   
   
-  # COMBINE all inputs
-  cbind(co, so, re, me, ou)
-      
+  ## TEMPORAL sector
+  
+  
+  # COMBINE input tables
+  if(as_one_df) {
+    aerscreen_inp <- cbind(co, so, bu, su)
+  } else {
+    aerscreen_inp <- list(control     = co,
+                          sources     = so,
+                          buildings   = bu,
+                          surface     = su)
+  }
+  
+  return(aerscreen_inp)
+  
 }

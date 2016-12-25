@@ -4,7 +4,7 @@
 \alias{write_aerscreen}
 \title{Write a data frame to an AERSCREEN input file}
 \usage{
-write_aerscreen(data = NULL, path = NULL, results_file = as.character(NA),
+write_aerscreen(data = NULL, path = NULL, out_file = "aerscreen.out",
   control = NULL, sources = NULL, buildings = NULL, surface = NULL)
 }
 \arguments{
@@ -13,7 +13,7 @@ write_aerscreen(data = NULL, path = NULL, results_file = as.character(NA),
 \item{path}{Path to write input file to. If blank, returns a character string.
 Defaults to "aerscreen.inp".}
 
-\item{results_file}{File to save AERSCREEN modeling results to. 
+\item{out_file}{File to save AERSCREEN modeling results to. 
 Defaults to "aerscreen.out".}
 
 \item{control}{Data frame of control parameters. If blank, control parameters from \code{data} are used.}
