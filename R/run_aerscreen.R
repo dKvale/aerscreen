@@ -33,7 +33,7 @@ run_aerscreen <- function(input          = "aerscreen.inp",
   sapply(c("aerscreen.exe", "aermod.exe", "makemet.exe", "bpipprm.exe"), function(x) exe_check(x, exe_folder))
   
   # Copy input file to exe_folder
-  if(!is_valid(input, 1)) stop('"input" file not found')
+  if(!aermod::is_valid(input, 1)) stop('"input" file not found')
   
   # Update out file for results
   if(!grepl("[.]out", out_file)) out_file <- paste0(out_file, ".out")

@@ -42,12 +42,15 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                           surface       = "surface") {
   
   # Create tables
+  
+  ## Control options
   co <- tibble::tibble(near_receptor   = 1,
                        far_receptor    = 500,
                        adjust_ustar    = "Y",
                        flagpole_height = as.numeric(NA),
                        debug_opt       = "N")
   
+  ## Source options
   so <- tibble::tibble(emit_gs       = as.numeric(NA),
                        height_m      = as.numeric(NA),
                        temp_k        = as.numeric(NA),
@@ -55,14 +58,16 @@ new_aerscreen <- function(aerscreen     = "aerscreen_inp",
                        diameter_m    = as.numeric(NA),
                        urban_pop     = as.numeric(NA))
   
+  ## Building options
   bu <- tibble::tibble(bpip_run            = "N",
                        bld_height          = as.numeric(NA),
-                       long_side           = as.numeric(NA),
                        short_side          = as.numeric(NA),
+                       long_side           = as.numeric(NA),
                        bld_rotation        = as.numeric(NA),
                        dist_from_source    = as.numeric(NA),
                        angle_from_source   = as.numeric(NA))
   
+  ## Surface characteristics
   su <- surface_df() 
   
   # Output
