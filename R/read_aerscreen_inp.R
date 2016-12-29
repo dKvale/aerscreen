@@ -118,7 +118,7 @@ read_aerscreen_inp <- function(path,
   
   co$near_receptor   <- df[ , 5]
   
-  co$flagpole_height <- df[ , 6]
+  co$flagpole_height <- df[ , 7]
   
   ## DEBUG On/Off
   start <- grep("DEBUG OPTION", inp) + 1
