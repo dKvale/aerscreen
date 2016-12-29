@@ -54,7 +54,7 @@ write_aerscreen <- function(data            = NULL,
     warning("The source is assigned an 'urban_pop' value below 100, it will be modeled using rural dispersion coefficients.")
   }
   
-  # Replace `NA` values with blanks to avoid printing 'NA'
+  # Replace `NA` values with Zeros to avoid printing 'NA'
   co[is.na(co)] <- 0
   
   so[is.na(so)] <- 0 
@@ -88,7 +88,7 @@ write_aerscreen <- function(data            = NULL,
                      "**                  ",
                      receptors::fw(bu$bpip_run, 6), 
                      receptors::fw(as.numeric(bu$bld_height), 10),
-                     receptors::fw(as.numeric(bu$long_side), 10),
+                     receptors::fw(as.numeric(bu$long_side), 11),
                      receptors::fw(as.numeric(bu$short_side), 10),
                      receptors::fw(as.numeric(bu$bld_rotation), 10),
                      receptors::fw(as.numeric(bu$angle_from_source), 10),
