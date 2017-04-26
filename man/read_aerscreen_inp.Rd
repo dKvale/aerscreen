@@ -33,4 +33,3 @@ read_aerscreen_inp(file = "aerscreen.inp")
 \keyword{input}
 \keyword{load}
 \keyword{read}
-

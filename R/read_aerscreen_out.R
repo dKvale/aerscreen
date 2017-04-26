@@ -6,7 +6,7 @@
 #' @export
 #' @examples
 #' \dontrun{
-#' read_aerscreen_out(file = "aerscreen.out")
+#' read_aerscreen_out(path = "aerscreen.out")
 #' }
 # 
 #
@@ -33,7 +33,7 @@ read_aerscreen_out <- function(path) {
     
   df <- read.csv(textConnection(df), header = FALSE, stringsAsFactors = FALSE)
     
-  df <- df[ , -c(1:3, ncol(df))]
+  df <- df[ , -c(1:3)]
     
   names(df) <- c("max_1hr_conc", "max_3hr_conc", "max_8hr_conc", "max_24hr_conc", "max_annual_conc")
   

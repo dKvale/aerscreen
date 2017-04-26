@@ -34,20 +34,36 @@ write_aerscreen <- function(data            = NULL,
   }
   
   ## Use pathway specific tables if provided
-  if(is.null(control) || !is.data.frame(control) || nrow(control) < 1) {co <- data} else {co <- control}
+  if(is.null(control) || !is.data.frame(control) || nrow(control) < 1) {
+      co <- data
+  } else {
+      co <- control
+    }
   
-  if(is.null(sources) || !is.data.frame(sources) || nrow(sources) < 1) {so <- data} else {so <- sources}
+  if(is.null(sources) || !is.data.frame(sources) || nrow(sources) < 1) {
+      so <- data
+  } else {
+      so <- sources
+    }
   
-  if(is.null(buildings) || !is.data.frame(buildings) || nrow(buildings) < 1) {bu <- data[1, ]} else {bu <- buildings[1, ]}
+  if(is.null(buildings) || !is.data.frame(buildings) || nrow(buildings) < 1) {
+      bu <- data[1, ]
+  } else {
+      bu <- buildings[1, ]
+    }
 
-  if(is.null(surface) || !is.data.frame(surface) || nrow(surface) < 1) {su <- data[1, ]} else {su <- surface[1, ]}
+  if(is.null(surface) || !is.data.frame(surface) || nrow(surface) < 1) {
+      su <- data[1, ]
+  } else {
+      su <- surface[1, ]
+    }
   
   # Check for building
   #bld_cols <- c("bld_height", "width_x", "length_y", "bld_rotation", "angle_from_source", "dist_from_source")
   #bpip_run <- ifelse(sum(sapply(unlist(bu[ , bld_cols]), function(x) aermod::is_valid(x, 1))) > 5, "Y", "N")
   
-  ## Check if urban population at least 100
-  if(aermod::is_valid(so$urban_pop) && so$urban_pop < 100) {
+  ## Check if urban population at least 10,000
+  if(aermod::is_valid(so$urban_pop) && so$urban_pop < 10000) {
     
     so$urban_pop <- NA
     

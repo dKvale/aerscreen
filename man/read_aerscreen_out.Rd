@@ -14,7 +14,7 @@ Read an aerscreen.out file into an AERSCREEN results table.
 }
 \examples{
 \dontrun{
-read_aerscreen_out(file = "aerscreen.out")
+read_aerscreen_out(path = "aerscreen.out")
 }
 }
 \keyword{aerscreen}
@@ -22,4 +22,3 @@ read_aerscreen_out(file = "aerscreen.out")
 \keyword{output}
 \keyword{read}
 \keyword{results}
-

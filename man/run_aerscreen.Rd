@@ -30,4 +30,3 @@ run_aerscreen(input      = "inputs/aerscreen.inp",
 \keyword{dispersion}
 \keyword{model}
 \keyword{run}
-

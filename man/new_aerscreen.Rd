@@ -53,4 +53,3 @@ input_list <- new_aerscreen(as_one_df = FALSE)
 \keyword{input}
 \keyword{new}
 \keyword{tables}
-

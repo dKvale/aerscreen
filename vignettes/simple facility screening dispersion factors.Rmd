@@ -1,0 +1,258 @@
+---
+title: "Update simple air screening dispersion factors for risk screening"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteIndexEntry{Updating air screening dispersion factors for facilities}
+---
+
+
+## Objective
+
+The default dispersion factors used for screening purposes are updated after the release of a new version of AERMOD or update to AERSCREEN. The model version `16216r` ^[AERMOD version: 16216r] was used for the current dispersion factors. The generated dispersion factors are designed to be protective and to overestimate dispersion during most real-world operating conditions. The conservative assumptions allow the results to be generalized to a wide set of operating scenarios and provide quick estimates of air concentrations for screening purposes.
+
+
+## Updates  
+
+The dispersion factors we're modeled with the adjusted U* setting on and off.
+
+_For general questions, contact [air.modeling@mn.state.us](emailto::air.modeling@mn.state.us)._
+
+## Assumptions
+
+1. __Downwash:__ Worst-case downwash parameters were captured by including buildings located 0, 30 and 50 meters from the facility in each of the 8 cardinal directions. Three building heights were modeled for each scenario: 50%, 75% and 100% of the stack height.   
+1. __Stack temperature:__ The minimum stack temperature was set to ambient conditions.  
+1. __Exit velocity:__     The minimum exit velocity was set to 0.5 m/s.  
+1. __Meteorology:__       Each scenario was modeled with default AERCREEN meteorology.
+
+  
+_The screening dispersion factors are not considered protective for facilities with exit temperatures below ambient or for sources with near zero exit velocity._
+  
+5. __Flat terrain:__ The model was run with the `flat terrain` option.
+5. __Rural:__        The model was run with the default `rural` option.
+5. __U*:__           Each scenario was modeled with adjusted U* and without.
+
+
+## Alernatives
+
+AERSCREEN uses a factor to estimate annual average concentrations - divide the 1-hour maximum by ten. While this method is appropriate for nearby receptors, the results tend to be overly protecive for distances greater than 50 meters.
+
+
+## Input files
+
+An input file was created for each of the scenario combinations below.  
+
+  - 42 stack heights: [1 to 37 and 40, 45, 50, 60, 70] meters    
+  - 6 stack diameters: [0.15, 0.3, 0.6, 1, 1.5, 3] meters    
+  - 6 exit velocities: [0.5, 1, 3, 10, 20, 35] m/s  
+  - 4 exit temperatures: [Ambient, 293, 315, 450] kelvin
+  - 2 surface conditions: Forested and urban
+  - 3 building distances
+  - 3 building heights
+  - 2 U-star options: U* on/off
+ 
+## Set input parameters
+```{r eval=F}
+boundary_distances <- c(seq(2, 18, 2), seq(20, 120, 5), seq(125, 225, 10), seq(240, 760, 20), seq(800, 1200, 40), seq(1250, 3000, 50), seq(3200, 5000, 150))
+
+sk_heights   <- c(1:37, 40, 45, 50, 60, 70)
+  
+sk_diameters <- c(0.15, 0.3, 0.6, 1, 1.5, 3) 
+  
+sk_velocity  <- c(0.5, 1, 3, 10, 20, 35) 
+
+tempsK <- c(0, 293, 315, 450)
+
+tempsF <- list("Ambient", 68, 107, 350)
+
+surf_options <- c(2, 7)
+  
+u_star <- c(T, F)
+
+build_distance <- seq(0, 30, 50)
+
+build_ht_frx   <- seq(0.5, 0.75, 1)
+
+n_scenarios <- length(u_star) * 
+               length(sk_diameters) * 
+               length(sk_velocity) * 
+               length(tempsK) * 
+               length(sk_heights) * 
+               length(surf_options) *
+               length(build_distance) *
+               length(build_ht_frx)
+  
+```
+
+`r paste0("A total of ", n_scenarios, " scenarios were modeled in total."`
+
+
+## Install software
+```{r eval = F}
+##Install AERSCREEN and supporting models to _EPA_ folder
+library(installEPA)
+install_epa(c("aerscreen", "bpip", "aermod", "makemet"), dir = "EPA", add_model_folder = FALSE)
+```
+
+
+## Create blank default dispersion table
+```{r eval = T}
+library(dplyr)
+library(knitr)
+
+disp_table <- data_frame(stack_height      =  rep(sk_heights, each = length(boundary_distances)),
+                         boundary_distance =  rep(boundary_distances, length(sk_heights)),
+                         disp_1hr          = NA,
+                         disp_annual       = NA)
+
+kable(head(disp_table))
+```  
+
+
+## Create new aerscreen table
+```{r eval = T}
+library(aerscreen)
+aer_inp <- new_aerscreen()
+
+
+kable(aer_inp)
+```  
+
+
+# Set building parameters
+```{r eval=T}
+# Dimensions
+new_build <- tibble::tibble(bld_height          = 16,
+                            short_side          = 8,
+                            long_side           = 14,
+                            bld_rotation        = 15,
+                            dist_from_source    = 8,
+                            angle_from_source   = 90)
+```
+
+
+## Run AERMOD for each scenario
+```{r eval=F}
+
+# Set default scenario
+height     = sk_heights[1]
+diam       = sk_diameters[1]
+velocity   = sk_velocity[1]
+tempk      = tempsK[1]
+star       = u_star[1]
+surface    = surf_options[1]
+bld_dist   = build_distance[1]
+bld_ht_frx = build_ht_frx[1]
+
+count <- 1
+
+for(star in u_star) {
+  
+for(surface in surf_options) {
+ 
+for(bld_dist in build_distance) {
+
+for(bld_ht_frx in build_ht_frx) {
+   
+## Assign default parameters
+aer_inp <- mutate(aer_inp,
+                  emit_gs       = 1,             # Average emissions in  grams/second
+                  height_m      = height,        # Stack height in meters
+                  temp_k        = tempk,         # Exit temperature in Kelvin
+                  velocity_ms   = velocity,      # Exit velocity in meters/second
+                  diameter_m    = diam,          # Inner stack diameter in meters
+                  urban_pop     = 0)             # Population of surrounding urban area
+ 
+
+## Set modeling distance
+aer_inp <- mutate(aer_inp,
+                  near_receptor   = 1,       # Distance from source to nearest modeling receptor in meters
+                  far_receptor    = 10000)   # Distance to furthest modeling receptor in meters 
+
+
+## Set surface characteristics
+aer_inp <- mutate(aer_inp,
+                  surface_profile  = surface,    # Forest, swamp, or urban land
+                  climate_profile  = 1,          # Average moisture conditions
+                  adjust_ustar     = ifelse(star, "Y", "N")) 
+
+## Add building to input file
+new_build$bld_height       <- height * bld_ht_frx
+new_build$dist_from_source <- bld_dist
+
+aer_inp[ , names(new_build)] <- new_build[1, ]
+
+# Turn downwash processing on
+aer_inp$bpip_run <- "Y"
+
+
+## Write AERSCREEN input file
+write_aerscreen(aer_inp, "EPA/screen.inp", out_file = "screen_results")
+
+## Run aerscreen on input file
+screen_results <- run_aerscreen("EPA/screen.inp", 
+                                out_file   = "screen_results",
+                                exe_folder = "EPA")
+
+for(height in sk_heights) {
+
+for(diam in sk_diameters) {
+
+for(velocity in sk_velocity) {
+
+for(tempK in tempsK) {
+  
+  
+# Print iteration count
+print(count)
+  
+count <- count + 1
+
+## Update source parameters
+aer_inp <- mutate(aer_inp,           
+                  height_m      = height,        # Stack height in meters
+                  temp_k        = tempk,         # Exit temperature in Kelvin
+                  velocity_ms   = velocity,      # Exit velocity in meters/second
+                  diameter_m    = diam)          # Inner stack diameter in meters
+
+
+## Update AERMOD input file
+aermod_inp     <- readLines("EPA/screen_results.inp")
+
+
+## Run AERMOD on input file
+screen_results <- run_aerscreen("EPA/screen.inp", 
+                                out_file   = "screen_results",
+                                exe_folder = "EPA")
+
+## Load results as data frame
+screen_results <- read_aerscreen_out("EPA/screen_results.out")
+
+
+## Find maximum dispersion within each 1 meter radii
+for(i in 1:nrow(disp_table)) {
+  
+  screen <- filter(screen_results, distance > disp_table[i, ]$distance)
+  
+  disp_table[i, ]$disp_1hr    <- max(disp_table[i, ]$disp_1hr, 
+                                     screen$max_1hr_conc, na.rm = T)
+  
+  disp_table[i, ]$disp_annual <- max(disp_table[i, ]$disp_annual , 
+                                     screen$max_annual_conc, na.rm = T)
+}
+
+}}}}}}}}
+```
+
+ 
+## Results 
+
+The tables and charts below compare the previous screening dispersion factors to the updated results. 
+```{r eval=F}
+
+
+```
+
+`r 'In his later books'`
+

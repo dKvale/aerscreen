@@ -1,32 +1,43 @@
----
-title: "aerscreen example: Dispersion with buildings vs. no buildings"
-author: "MPCA - Risk evaluation and air modeling, EAO"
+---  
+title: "Downwash impacts"  
+author: "aerscreen"
 date: "`r Sys.Date()`"
-output:
+output: 
   rmarkdown::html_vignette:
-    toc: true
+    keep_md: true
 vignette: >
   %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteIndexEntry{aerscreen example: Dispersion with buildings vs. no buildings}
+  %\VignetteIndexEntry{Downwash impacts}
+  \usepackage[utf8]{inputenc} 
 ---
+  
+<style>
+  body {
+    max-width: 1000px;
+    margin: auto;
+    padding: 1em;
+    line-height: 20px ; 
+  }
+</style>
+  
+> ## Compare air dispersion results for a facility:  
+> 1) Without buildings
+> 2) With buildings
 
 
-## Mission
+# Setup
 
-Compare the AERSCREEN dispersion results for a facility with buidings nearby to the results if the buildings are removed.
-
-## Install AERSCREEN and supporting models to 'EPA' folder
+## Install AERSCREEN and supporting models to _EPA_ folder
 ```{r eval = F}
 library(installEPA)
 install_epa(c("aerscreen", "bpip", "aermod", "makemet"), dir = "EPA", add_model_folder = FALSE)
 
 # Copy aermod.exe into AERSCREEN folder
-install_dir <- paste0(getwd(), '/EPA')
+#install_dir <- paste0(getwd(), '/EPA')
 
-relocate <- paste0(substring(getwd(), 1, 2), " & CD ", install_dir)
+#relocate <- paste0(substring(getwd(), 1, 2), " & CD ", install_dir)
 
-shell(paste0(relocate, '/', list.files(install_dir)[grepl("aermod", list.files(install_dir))][1], 
-             ' & COPY "', "aermod.exe", '" "', install_dir, '/aermod.exe"'))
+#shell(paste0(relocate, '/', list.files(install_dir)[grepl("aermod", list.files(install_dir))][1], ' & COPY "', "aermod.exe", '" "', install_dir, '/aermod.exe"'))
   
 ```
 
@@ -45,10 +56,10 @@ library(dplyr)
 
 aer_inp <- mutate(aer_inp,
                   emit_gs       = 1,      # Average emissions in  grams/second
-                  height_m      = 10,     # Stack height in meters
-                  temp_k        = 310,    # Exit temperature in Kelvin
-                  velocity_ms   = 20,     # Exit velocity in meters/second
-                  diameter_m    = 2,      # Inner stack diameter in meters
+                  height_m      = 9,      # Stack height in meters
+                  temp_k        = 300,    # Exit temperature in Kelvin
+                  velocity_ms   = 10,     # Exit velocity in meters/second
+                  diameter_m    = 1,      # Inner stack diameter in meters
                   urban_pop     = 400000) # Population of surrounding urban area
 
 ```
@@ -58,7 +69,7 @@ aer_inp <- mutate(aer_inp,
 ```{r eval = T}
 aer_inp <- mutate(aer_inp,
                   near_receptor   = 1,     # Distance from source to nearest modeling receptor in meters
-                  far_receptor    = 500)   # Distance to furthest modeling receptor in meters
+                  far_receptor    = 400)   # Distance to furthest modeling receptor in meters
 
 ```
 
@@ -71,24 +82,24 @@ aer_inp <- mutate(aer_inp,
 ```
 
 
-## Assume no buildings for downwash
+# No building dispersion
 
 
-## Create aerscreen input file
+## Write aerscreen input file
 ```{r eval = T}
 write_aerscreen(aer_inp, "EPA/no_builds.inp", out_file = "no_builds.out")
 ```
 
 
-## Run aerscreen from input text file
-```{r eval = F}
+## Run aerscreen on input file
+```{r eval = T, cache =F}
 no_build_results <- run_aerscreen("EPA/no_builds.inp", 
                                   out_file   = "no_build_results",
                                   exe_folder = "EPA")
 ```
 
 ## View results as data frame
-```{r eval = F}
+```{r eval = T}
 no_build_results <- read_aerscreen_out("no_build_results.out")
 
 kable(no_build_results)
@@ -96,19 +107,69 @@ kable(no_build_results)
 ```
 
 
-## Create input file with building
-```{r eval = F}
+<br/>  
+
+# With building dispersion
+
+## Create new input file 
+```{r eval = T}
 # Load input file
-with_build_inp <- read_aerscreen_inp("EPA/no_builds.inp")
+build_inp <- read_aerscreen_inp("EPA/no_builds.inp")
+```
+
+## Assign building parameters
+```{r eval = T}
+
+# Set dimensions
+new_build <- tibble::tibble(bld_height          = 16,
+                            short_side          = 8,
+                            long_side           = 14,
+                            bld_rotation        = 15,
+                            dist_from_source    = 8,
+                            angle_from_source   = 10)
 
 
 ```
-## Run building input file
+
+## Add building to input file
+```{r eval = T}
+
+build_inp[ , names(new_build)] <- new_build[1, ]
+
+# Turn downwash processing on
+build_inp$bpip_run <- "Y"
+
+kable(build_inp)
+```
+
+## Run AERSCREEN on building input file
+```{r eval = T, cache=F}
+## Write building input file
+write_aerscreen(build_inp, "EPA/builds.inp", out_file = "build_results")
+
+## Run aerscreen on input file
+build_results <- run_aerscreen("EPA/builds.inp", 
+                               out_file   = "build_results",
+                               exe_folder = "EPA")
+
+## Load results as data frame
+build_results <- read_aerscreen_out("build_results.out")
+
+kable(build_results)
+```
 
 
-## Compare results
-```{r }
-no_build_results <- read_aerscreen_out("no_builds_results.out", as_text = FALSE)
+# Dispersion comparison
 
-#kable(results)
+## Maximum concentration
+```{r eval = T, fig.width = 6, fig.height = 3.5, cache =F}
+library(ggplot2)
+build_results$model <- "with buildings"
+
+no_build_results$model <- "no buildings"
+
+
+ggplot(rbind(build_results, no_build_results), aes(model, max_1hr_conc, fill = model)) +
+  geom_bar(stat = "identity") + labs(title = "Max 1-hour")
+
 ```

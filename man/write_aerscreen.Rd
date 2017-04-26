@@ -36,4 +36,3 @@ write_aerscreen(data = aerscreen_inp, path = "aerscreen.inp")
 \keyword{input}
 \keyword{save}
 \keyword{write}
-
