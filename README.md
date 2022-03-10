@@ -13,3 +13,11 @@ The _aerscreen_ package provides a data frame interface for performing AERSCREEN
 **AERSCREEN** is EPA's air dispersion screening model based on _AERMOD_. _AERSCREEN_ is intended to produce concentration results that are equal to or greater than results produced by _AERMOD_.
  
 _EPA documentation_ - https://www3.epa.gov/ttn/scram/dispersion_screening.htm#aerscreen
+
+``` r
+# 1. Install the 'remotes' package
+install.packages("remotes")
+
+# 2. Install the development pkg from GitHub
+remotes::install_github("MPCA-data/aerscreen")
+```
