@@ -67,7 +67,7 @@ write_aerscreen <- function(data            = NULL,
     
     so$urban_pop <- NA
     
-    warning("The source is assigned an 'urban_pop' value below 100, it will be modeled using rural dispersion coefficients.")
+    warning("FYI: The source is assigned an 'urban_pop' value below 100, it will be modeled using rural dispersion coefficients.")
   }
   
   # Replace `NA` values with Zeros to avoid printing 'NA'
