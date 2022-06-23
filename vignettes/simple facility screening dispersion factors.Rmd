@@ -254,5 +254,4 @@ The tables and charts below compare the previous screening dispersion factors to
 
 ```
 
-`r 'In his later books'`
 
