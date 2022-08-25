@@ -19,5 +19,5 @@ _EPA documentation_ - https://www3.epa.gov/ttn/scram/dispersion_screening.htm#ae
 install.packages("remotes")
 
 # 2. Install the development pkg from GitHub
-remotes::install_github("MPCA-data/aerscreen")
+remotes::install_github("dKvale/aerscreen")
 ```
